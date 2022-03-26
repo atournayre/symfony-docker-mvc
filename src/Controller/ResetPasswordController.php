@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Service\Email\ReinitialisationDeMotDePasseService;
 use App\Entity\Utilisateur;
 use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
@@ -11,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -130,7 +132,19 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer): RedirectResponse
+    /**
+     * @param string                              $emailFormData
+     * @param MailerInterface                     $mailer
+     * @param ReinitialisationDeMotDePasseService $reinitialisationDeMotDePasseService
+     *
+     * @return RedirectResponse
+     * @throws TransportExceptionInterface
+     */
+    private function processSendingPasswordResetEmail(
+        string $emailFormData,
+        MailerInterface $mailer,
+        ReinitialisationDeMotDePasseService $reinitialisationDeMotDePasseService
+    ): RedirectResponse
     {
         $user = $this->entityManager->getRepository(Utilisateur::class)->findOneBy([
             'email' => $emailFormData,
@@ -157,15 +171,7 @@ class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_check_email');
         }
 
-        $email = (new TemplatedEmail())
-            ->from(new Address('noreply@example.com', 'No Reply'))
-            ->to($user->getEmail())
-            ->subject('Your password reset request')
-            ->htmlTemplate('reset_password/email.html.twig')
-            ->context([
-                'resetToken' => $resetToken,
-            ])
-        ;
+        $email = ($reinitialisationDeMotDePasseService)($user, $resetToken);
 
         $mailer->send($email);
 
