@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Service\Email;
+namespace App\Service\Email;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
