@@ -93,4 +93,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->getUserIdentifier();
+    }
 }
