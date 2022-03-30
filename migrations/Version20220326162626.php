@@ -20,6 +20,9 @@ final class Version20220326162626 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE SEQUENCE utilisateur_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('create table utilisateur (id integer not null primary key, email varchar(180) not null, roles json not null, password varchar(255) not null)');
+        $this->addSql('create unique index uniq_1d1c63b3e7927c74 on utilisateur (email)');
         $this->addSql('CREATE SEQUENCE reset_password_request_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE reset_password_request (id INT NOT NULL, user_id INT NOT NULL, selector VARCHAR(20) NOT NULL, hashed_token VARCHAR(100) NOT NULL, requested_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, expires_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_7CE748AA76ED395 ON reset_password_request (user_id)');
@@ -32,6 +35,8 @@ final class Version20220326162626 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
+        $this->addSql('DROP SEQUENCE utilisateur_id_seq CASCADE');
+        $this->addSql('DROP TABLE utilisateur');
         $this->addSql('DROP SEQUENCE reset_password_request_id_seq CASCADE');
         $this->addSql('DROP TABLE reset_password_request');
     }
