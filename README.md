@@ -2,8 +2,6 @@
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework, with full [HTTP/2](https://symfony.com/doc/current/weblink.html), HTTP/3 and HTTPS support.
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
-
 ## Getting Started
 
 1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/)
@@ -14,12 +12,12 @@ A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony
 
 ## Features
 
-* Production, development and CI ready
-* Automatic HTTPS (in dev and in prod!)
+* Development and CI ready
+* Automatic HTTPS
 * HTTP/2, HTTP/3 and [Preload](https://symfony.com/doc/current/web_link.html) support
 * Built-in [Mercure](https://symfony.com/doc/current/mercure.html) hub
 * [Vulcain](https://vulcain.rocks) support
-* Just 2 services (PHP FPM and Caddy server)
+* Just 3 services (PHP FPM, Caddy server and PostgreSQL)
 * Super-readable configuration
 
 **Enjoy!**
