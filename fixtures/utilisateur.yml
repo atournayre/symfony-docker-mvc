@@ -2,7 +2,8 @@ App\Entity\Utilisateur:
     utilisateur_barry_allen:
         email: 'barry.allen@dc.comics'
         password: '<hashPassword(jesuisflash)>'
-        prenom: 'Stéphan'
+        prenom: 'Barry'
+        nom: 'Allen'
         avatar: '<avatar(barry.allen@dc.comics)>'
     admin:
         email: 'admin@example.com'
