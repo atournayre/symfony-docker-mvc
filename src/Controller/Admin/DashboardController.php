@@ -2,45 +2,96 @@
 
 namespace App\Controller\Admin;
 
+use App\Configurateur\DashboardConfigurateur;
+use App\Controller\Admin\Utilisateur\UtilisateurCrudController;
+use App\Entity\Utilisateur;
+use App\Enum\Role;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class DashboardController extends AbstractDashboardController
 {
-    #[Route('/admin', name: 'admin')]
-    public function index(): Response
+    const ACTION_RETOUR = 'retour';
+
+    public function __construct(
+        private readonly AdminUrlGenerator $adminUrlGenerator,
+    )
     {
-        return parent::index();
+    }
 
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        // return $this->redirect($adminUrlGenerator->setController(OneOfYourCrudController::class)->generateUrl());
+    #[Route('/admin', name: 'admin')]
+    public function index(
+        RequestStack $requestStack = null
+    ): Response
+    {
+        assert(null !== $requestStack);
 
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirect('...');
-        // }
+        $request = $requestStack->getMainRequest();
+        if ($request->get('crudAction')) {
+            return $this->render('@EasyAdmin/page/content.html.twig');
+        }
+        return $this->render('@EasyAdmin/page/content.html.twig');
 
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        // return $this->render('some/path/my-dashboard.html.twig');
+//        $url = $this->adminUrlGenerator
+//            ->setController(UtilisateurCrudController::class)
+//            ->setAction(Action::INDEX)
+//            ->set('entityFqcn', Utilisateur::class)
+//            ->set('menuIndex', 1)
+//            ->set('submenuIndex', -1)
+//            ->generateUrl();
+//        return $this->redirect($url);
     }
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('App');
+            ->setTitle('Application');
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+
+        yield MenuItem::section('Administration', 'fa fa-cog')
+            ->setPermission(Role::ROLE_ADMIN->name);
+        yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', Utilisateur::class)
+            ->setPermission(Role::ROLE_ADMIN->name);
+    }
+
+    public function configureCrud(): Crud
+    {
+        return DashboardConfigurateur::crud(parent::configureCrud());
+    }
+
+    public function configureActions(): Actions
+    {
+        return DashboardConfigurateur::actions(parent::configureActions());
+    }
+
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        $menuItems = [
+            MenuItem::linkToUrl('Paramètres', 'fa fa-cog', $this->urlDEditionDeProfil($user)),
+        ];
+        return DashboardConfigurateur::userMenu(parent::configureUserMenu($user), $user, $menuItems);
+    }
+
+    private function urlDEditionDeProfil(UserInterface $user): string
+    {
+        return $this->adminUrlGenerator
+            ->setController(UtilisateurCrudController::class)
+            ->setAction(Action::EDIT)
+            ->setEntityId($user->getId())
+            ->generateUrl();
     }
 }
