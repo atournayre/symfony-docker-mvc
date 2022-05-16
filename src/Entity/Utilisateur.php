@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Role;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -11,8 +12,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
@@ -23,6 +25,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string')]
     private $password;
+
+    private ?string $motDePasse = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $prenom;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nom;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $avatar;
 
     public function getId(): ?int
     {
@@ -100,5 +113,96 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUsername(): string
     {
         return $this->getUserIdentifier();
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): self
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->prenom;
+    }
+
+    public function nEstPasAdmin(): bool
+    {
+        if (empty($this->roles)) return true;
+
+        return $this->getRoles() === [Role::ROLE_USER->name];
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatarUrl(): ?string
+    {
+        if(!$this->avatar) return null;
+
+        return sprintf('avatars/uploads/%s', $this->avatar);
+    }
+
+    /**
+     * @return string
+     */
+    public function getNomComplet(): string
+    {
+        return implode(' ', [$this->prenom, $this->nom]);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMotDePasse(): ?string
+    {
+        return $this->motDePasse;
+    }
+
+    /**
+     * @param string|null $motDePasse
+     *
+     * @return Utilisateur
+     */
+    public function setMotDePasse(?string $motDePasse): Utilisateur
+    {
+        $this->motDePasse = $motDePasse;
+        return $this;
+    }
+
+    public function leMotDePasseAEteModifie(): bool
+    {
+        return $this->motDePasse !== ''
+            && !is_null($this->motDePasse);
     }
 }
