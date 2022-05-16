@@ -1,11 +1,28 @@
-{% extends 'base.html.twig' %}
+{% set titrePage = 'Email de réinitialisation de mot de passe envoyé' %}
 
-{% block title %}Email de réinitialisation de mot de passe envoyé{% endblock %}
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# This template checks for 'ea' variable existence because it can
+   be used in a EasyAdmin Dashboard controller, where 'ea' is defined
+   or from any other Symfony controller, where 'ea' is not defined #}
+{% extends ea is defined ? ea.templatePath('layout') : '@EasyAdmin/page/login_minimal.html.twig' %}
+{% trans_default_domain ea is defined ? ea.i18n.translationDomain : (translation_domain is defined ? translation_domain ?? 'messages') %}
 
-{% block body %}
-    <p>
-        Si un compte existe pour votre adresse email, alors un email vient de vous être envoyé pour réinitialiser votre mot de passe.
-        Ce lien expire dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>Si vous ne recevez pas d'email, vérifiez vos spams ou <a href="{{ path('app_forgot_password_request') }}">réessayez</a>.</p>
+{% block body_class 'page-login' %}
+{% block page_title %}{{ page_title is defined ? page_title|raw : (ea is defined ? ea.dashboardTitle|raw : '') }}{% endblock %}
+
+{% block wrapper_wrapper %}
+    {% set page_title = titrePage %}
+
+    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+    <div class="login-wrapper">
+        <section class="content">
+            <p>
+                Si un compte existe pour votre adresse email, alors un email vient de vous être envoyé pour réinitialiser votre mot de passe.
+                Ce lien expire dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+            </p>
+            <p>Si vous ne recevez pas d'email, vérifiez vos spams ou <a href="{{ path('app_forgot_password_request') }}">réessayez</a>.</p>
+
+        </section>
+    </div>
 {% endblock %}
