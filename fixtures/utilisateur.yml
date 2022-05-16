@@ -1,0 +1,21 @@
+App\Entity\Utilisateur:
+    utilisateur_barry_allen:
+        email: 'barry.allen@dc.comics'
+        password: '<hashPassword(jesuisflash)>'
+        prenom: 'Barry'
+        nom: 'Allen'
+        avatar: '<avatar(barry.allen@dc.comics)>'
+    admin:
+        email: 'admin@example.com'
+        password: '<hashPassword(admin)>'
+        prenom: 'Administrateur'
+        avatar: '<avatar(admin@example.com)>'
+        roles:
+            - ROLE_ADMIN
+    superadmin:
+        email: 'superadmin@example.com'
+        password: '<hashPassword(superadmin)>'
+        prenom: 'Super Administrateur'
+        avatar: '<avatar(superadmin@example.com)>'
+        roles:
+            - ROLE_SUPER_ADMIN

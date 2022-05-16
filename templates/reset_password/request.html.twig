@@ -1,21 +1,40 @@
-{% extends 'base.html.twig' %}
+{% set titrePage = 'Réinitialisez votre mot de passe' %}
 
-{% block title %}Réinitialisez votre mot de passe{% endblock %}
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# This template checks for 'ea' variable existence because it can
+   be used in a EasyAdmin Dashboard controller, where 'ea' is defined
+   or from any other Symfony controller, where 'ea' is not defined #}
+{% extends ea is defined ? ea.templatePath('layout') : '@EasyAdmin/page/login_minimal.html.twig' %}
+{% trans_default_domain ea is defined ? ea.i18n.translationDomain : (translation_domain is defined ? translation_domain ?? 'messages') %}
 
-{% block body %}
-    {% for flash_error in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
-    <h1>Réinitialisez votre mot de passe</h1>
+{% block body_class 'page-login' %}
+{% block page_title %}{{ page_title is defined ? page_title|raw : (ea is defined ? ea.dashboardTitle|raw : '') }}{% endblock %}
 
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
-            <small>
-                Renseignez votre adresse email et nous vous enverrons un lien de réinitialisation de mot de passe.
-            </small>
-        </div>
+{% block wrapper_wrapper %}
+    {% set page_title = titrePage %}
 
-        <button class="btn btn-primary">Envoyez l'email de réinitialisation de mot de passe</button>
-    {{ form_end(requestForm) }}
+    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+    <div class="login-wrapper">
+        <section class="content">
+
+            {% if error|default(false) %}
+                <div class="w-100 alert alert-danger rounded mb-3">
+                    <i class="fas fa-times-circle mr-1"></i>
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            {{ form_start(requestForm) }}
+            {{ form_row(requestForm.email) }}
+            <div>
+                <small>
+                    Renseignez votre adresse email et nous vous enverrons un lien de réinitialisation de mot de passe.
+                </small>
+            </div>
+            <button class="btn btn-primary btn-lg btn-block">Envoyer</button>
+            {{ form_end(requestForm) }}
+
+        </section>
+    </div>
 {% endblock %}
