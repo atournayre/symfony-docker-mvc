@@ -20,6 +20,11 @@ A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony
 * Just 3 services (PHP FPM, Caddy server and PostgreSQL)
 * Super-readable configuration
 
+### Built-in
+
+* CRUD User
+* EasyAdmin
+
 **Enjoy!**
 
 ## Docs
