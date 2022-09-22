@@ -14,7 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,26 +29,9 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[Route('/admin', name: 'admin')]
-    public function index(
-        RequestStack $requestStack = null
-    ): Response
+    public function index(): Response
     {
-        assert(null !== $requestStack);
-
-        $request = $requestStack->getMainRequest();
-        if ($request->get('crudAction')) {
-            return $this->render('@EasyAdmin/page/content.html.twig');
-        }
         return $this->render('@EasyAdmin/page/content.html.twig');
-
-//        $url = $this->adminUrlGenerator
-//            ->setController(UtilisateurCrudController::class)
-//            ->setAction(Action::INDEX)
-//            ->set('entityFqcn', Utilisateur::class)
-//            ->set('menuIndex', 1)
-//            ->set('submenuIndex', -1)
-//            ->generateUrl();
-//        return $this->redirect($url);
     }
 
     public function configureDashboard(): Dashboard
